@@ -1,0 +1,223 @@
+---
+title: "Final Project"
+author: "Cameron Atighetchi"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      eval = FALSE,
+                      message = FALSE)
+```
+
+For my final project, I decided to visualize some of the data from my Thesis/Dissertation and potentially use these visualizations in my thesis!!
+
+
+## Systemic Lupus Erythematosus (SLE)
+
+Systemic Lupus Erythematosus or SLE is an autoimmune disorder that is characterized by systemic inflammation and damage to tissues. The genetic basis of this disease is not well studied in individuals of differing ancestries, and so my thesis focuses on broadening this disparity by including a large cohort of diverse ancestries including those of Hispanic ethnicity, European/White, Asian, African Americans, and others to investigate the genetic and chronic factors associated with an increased risk in SLE.
+
+One aspect of my project entails analyzing both the demographic and heterogeneous manifestations of SLE in the form of comorbidities (or merely "side effects" of having SLE).
+
+Unfortunately, I could not include this data into my presentation, because it is encrypted in a biobank (All of Us: National Institute of Health). However I will go ahead an describe the two cohorts we are examining in this project. 
+
+## Describing our Cohorts
+
+For my project we employed two cohorts that we use in our analyses:
+
+(1) Cases Cohort : Defined as individuals that have SLE (N = 3,289)
+
+(2) Control Cohort: Defined as individuals without any autoimmune disorders (N = 344,606)
+
+## Purpose of Datasets
+
+For this visualization, I decided to use two separate analyses, breaking up this project into two parts:  
+
+  1) I decided to use a demographic dataframe with a joined dataset of Cases and Controls demographic data to describe and compare our cohorts by 5 different demographics: **Race, Ethnicity, Gender, Sex at Birth, and Age**  
+  
+  2) Next I decided to use a comorbidity dataset of SLE affected individuals to investigate the heterogeneous manifestations of SLE; this includes investigating the demographics associated with these varied manifestations and the distribution of comorbidities throughout ancestries (we can use analysis to deem significance if any amongst a specific manifestation to an ancestry)
+
+
+# Visualization #1 - Demographics
+
+### Data Dictionary
+
+| Column Name  | Data Type | Description|
+|:------------:|:-------:|-------------:|
+| person_id | Numeric | Unique ID of every patient in a dataset |
+| gender | Character  | The gender of each patient |
+| age |  Numeric   | Age of each unique patient |
+| race | Character | Race of each unique patient |
+| ethnicity  |  Character | Hispanic or non-Hispanic Ethnicity for each patient |
+| sex_at_birth  |  Character  | Sex at Birth for each patient |
+| group  |  Character  | Either denoted as SLE "Cases" or "Control"|
+
+
+### Load Libraries
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(devtools)
+library(patchwork)
+```
+
+### Control + Cases Demographic Datasets
+
+We have two datasets that have the same data dictionary and only differ in the values/quantity of values presented in each dataset: 
+
+> **Cases** = df_5demo_uniq  
+  **Controls** = df_5control_demo_uniq
+
+We then add a column with grouping to these datasets so when joined, we are able to subset them:
+
+```{r}
+df_5demo_uniq$group <- "Cases"
+df_5control_demo_uniq$group <- "Controls"
+```
+
+### Data Wrangling and Demographic Analyses
+
+We want to compare demographic values between our Cases and Controls cohorts based on the occurrence of SLE in a demographic
+
+> For instance, if someone is African-American [or other demographic], does that increase the chance that they would have SLE?
+
+### Gender Demographic
+
+#### First, we filter out unwanted values
+
+Here we want to filter out some gender values since we have too many unique values for both Cases and Control datasets
+
+
+Data Wrangling for **Cases** Gender Demographic:
+
+```{r}
+##### Subsets some CASES gender values into a "NA" Category ########
+
+# groups all extra values of these into "NA" category using ifelse
+
+df_5demo_uniq$gender <- ifelse(df_5demo_uniq$gender %in% 
+                                 c("PMI: Skip",  
+                                    "I prefer not to answer",
+                                    "Not man only, not woman only, prefer                                                                not to answer, or skipped"), 
+                                   "NA", 
+                                   df_5demo_uniq$gender) 
+
+# groups all of these extra values in "Other" category using ifelse
+
+df_5demo_uniq$gender <- ifelse(df_5demo_uniq$gender %in% 
+                                 c("Gender Identity: Transgender", "Gender Identity: Non Binary",
+                                    "Gender Identity: Additional Options"), 
+                                    "Other", 
+                                    df_5demo_uniq$gender)
+```
+
+
+Data Wrangling for **Control** Gender Demographic:
+
+```{r}
+# groups all CONTROL extra gender variables
+
+# groups all extra values of these into "NA" category using ifelse
+
+df_5control_demo_uniq$gender <- ifelse(df_5control_demo_uniq$gender %in% 
+                                                            c("PMI: Skip", 
+                                                            "I prefer not to answer",
+                                                            "Not man only, not woman only, prefer                                                               not to answer, or skipped",
+                                                            "No matching concept"), 
+                                                            "NA", 
+                                                            df_5control_demo_uniq$gender)
+
+
+# groups all of these extra values in "Other" category using ifelse
+
+df_5control_demo_uniq$gender <- ifelse(df_5control_demo_uniq$gender %in% 
+                                                            c("Gender Identity: Transgender", 
+                                                            "Gender Identity: Non Binary",
+                                                            "Gender Identity: Additional Options"), 
+                                                            "Other", 
+                                                            df_5control_demo_uniq$gender)
+
+```
+
+
+#### Next, we COMBINE these two datasets to create a dataset for our gender counts and subsets
+
+To create a dataframe with each dataset possessing the same variables, I didn't use a dplyr join function instead I used a base R rbind() function that adds the datasets vertically rather than horizontally!
+
+```{r}
+
+data_gender <- rbind(
+  df_5demo_uniq,df_5control_demo_uniq)   # this adds control and cases datasets together to form a new dataset known as "data_gender" that includes all the values from both datasets with a group column that denotes "Control" or "Case"
+
+```
+
+#### Lastly, we can plot out data into something useful
+
+Now that our data is filtered out we then can count the instances of genders subset through both groups (Cases and Controls) and plot them into a graph
+
+```{r}
+
+df_counts <- data_gender %>% 
+  count(group, gender)
+
+# Calculate the percentage of each gender within each group
+df_percent <- df_counts %>% 
+  group_by(group) %>% 
+  mutate(Percent = n / sum(n) * 100)
+
+#Reorder bars to be in ascending order
+df_percent$gender <- reorder(df_percent$gender, df_percent$Percent)
+
+# Create a custom label with N values in a smaller font size
+label <- expression(atop(paste("Cases"), paste("(N = 3,289)")),
+                    atop(paste("Controls"), paste("(N = 344,606)"), size = 0.4))
+
+# Create a stacked barplot of gender percentage by group
+ggplot(df_percent, aes(x = group, y = Percent, fill = gender)) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(title = "Gender", x = "Group", y = "Percentage", fill = "Gender") +
+ scale_fill_brewer(palette = "Spectral") +
+    theme_clean() +
+    theme(axis.text.x = element_text(size = 14),
+         axis.text.y = element_text(size = 14),
+         axis.title.x = element_blank(),
+         axis.title.y = element_text(size = 16, vjust = 1.2, face = "bold"),
+         plot.title = element_text(size = 16, hjust = 0.5, vjust = -1.2)) +
+    scale_x_discrete(labels = label)
+
+```
+
+![ ](here("Output", "Gender_Plot.png"))
+
+
+### Age Demographic
+
+Here we want to look at the distribution of age between Cases and Controls
+
+
+```{r}
+df_age <- rbind(df_5control_demo_uniq, df_5demo_uniq)
+
+age_controls <- ggplot(df_5control_demo_uniq, aes(x = age, fill = group)) +
+  geom_histogram(binwidth = 4, position = "dodge", alpha = 0.5, color = "black", aes(y = after_stat(density))) +
+  labs(x = "Age", y = "Density", title = "Controls") +
+  scale_fill_manual(values = c("lightblue"), name = "Group") +
+  theme_clean() + 
+    xlim(0, 100)
+
+
+age_cases <- ggplot(df_5demo_uniq, aes(x = age, fill = group)) +
+  geom_histogram(binwidth = 4, position = "dodge", alpha = 0.5, color = "black", aes(y = after_stat(density))) +
+  labs(x = "Age", y = "Density", title = "Cases") +
+  scale_fill_manual(values = c("pink"), name = "Group") +
+  theme_clean() + 
+xlim(0,100)
+
+combined_age <- age_controls + age_cases
+
+combined_age  + plot_layout(widths = c(20, 20))
+```
+
