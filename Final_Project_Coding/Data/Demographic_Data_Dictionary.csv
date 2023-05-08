@@ -1,0 +1,8 @@
+﻿Column Name,Data Type,Description
+person_id,Numeric,Unique ID of every patient in a dataset
+gender,Character,The gender of each patient
+age,Numeric,Age of each unique patient
+race,Character,Race of each unique patient
+ethnicity,Character,Hispanic or non-Hispanic Ethnicity for each patient
+sex_at_birth,Character,Sex at Birth for each patient
+group,Character,"Either denoted as SLE ""Cases"" or ""Control"" - whether or not an individual has SLE"

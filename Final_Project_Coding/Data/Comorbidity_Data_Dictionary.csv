@@ -1,0 +1,8 @@
+﻿Column Name,Data Type,Description
+person_id,Numeric,Unique ID of every patient in a dataset
+gender,Character,The gender of each patient
+age,Numeric,Age of each unique patient
+race,Character,Race of each unique patient
+ethnicity,Character,Hispanic or non-Hispanic Ethnicity for each patient
+standard_concept_name,Character, Comorbidity diagnoses separated by commas
+commor_score,Numeric (Integer),Denotes severity of SLE on an arbitrary scale of 1-6
