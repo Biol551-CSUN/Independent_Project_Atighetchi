@@ -35,19 +35,20 @@ For my project we employed two cohorts that we use in our analyses:
 
 (2) **Control Cohort**: Defined as individuals without any autoimmune disorders (N = 344,606)
 
+## Metadata
+
+The data I am using for this project comes from NIH's All of Us Researcher Workbench and uses a collection of data from electronic health records, survey answers, physical measurements, and wearable devices like Fitbits. Registered Tier data are adjusted to lower the chance that any researcher can identify any one participant. For example, researchers cannot see a participant’s exact location, only the state where they live.
+
+The curated dataset I am using may be accessed by registered researchers in the All of Us Researcher Workbench. Registered Tier data includes individual-level data from surveys, physical measurements taken at the time of participant enrollment, longitudinal Health Records, and data from wearables like Fitbit. This individual-level data must be analyzed within the secure Researcher Workbench
+
 ## Purpose of Datasets
 
 For this visualization, I decided to use two separate analyses, breaking up this project into two parts:
 
 1)  I decided to use a demographic dataframe with a joined dataset of Cases and Controls demographic data to describe and compare our cohorts by 5 different demographics: **Race, Ethnicity, Gender, Sex at Birth, and Age**
 
-2)  Next I decided to use a comorbidity dataset of SLE affected individuals to investigate the heterogeneous manifestations of SLE; this includes investigating the demographics associated with these varied manifestations and the distribution of comorbidities throughout ancestries (we can use analysis to deem significance if any amongst a specific manifestation to an ancestry)
+2)  Next I decided to use a comorbidity dataset of SLE affected individuals to investigate the heterogeneous manifestations of SLE; this includes investigating the demographics associated with these varied manifestations and the distribution of comorbidities throughout ancestries (we can use analysis to deem significance amongst a specific manifestation to an ancestry)
 
-## Metadata
-
-The data I am using for this project comes from NIH's All of Us Researcher Workbench and uses a collection of data from electronic health records, survey answers, physical measurements, and wearable devices like Fitbits. Registered Tier data are adjusted to lower the chance that any researcher can identify any one participant. For example, researchers cannot see a participant’s exact location, only the state where they live.
-
-The curated dataset I am using may be accessed by registered researchers in the All of Us Researcher Workbench. Registered Tier data includes individual-level data from surveys, physical measurements taken at the time of participant enrollment, longitudinal Health Records, and data from wearables like Fitbit. This individual-level data must be analyzed within the secure Researcher Workbench
 
 # Visualization #1 & #2 - Demographics
 
@@ -88,7 +89,7 @@ df_5control_demo_uniq$group <- "Controls"
 
 ### Data Wrangling and Demographic Analyses
 
-We want to compare demographic values between our Cases and Controls cohorts based on the occurrence of SLE in a demographic
+We want to compare demographic values (here we'll do gender) between our Cases and Controls cohorts based on the occurrence of SLE in a demographic
 
 > For instance, if someone is female [or other demographic], does that increase the chance that they would have SLE?
 
